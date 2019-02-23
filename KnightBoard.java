@@ -2,19 +2,23 @@ public class KnightBoard{
 
     private int[][] board;
     private final int[][] moves;
+    private int[][] optimize;
 
     public static void main(String[] args) {
         KnightBoard test = new KnightBoard(4,4);
         System.out.println(test);
         System.out.println(test.solve(0,0));
         System.out.println(test);
-        test.clear();
         System.out.println(test.countSolutions(0,0));
         System.out.println(test);
+
+        test.makeMoves();
+        System.out.println(test.optimize);
     }
 
     public KnightBoard(int startingRows,int startingCols){
         board = new int[startingRows][startingCols];
+        optimize = board;
         moves = new int[][] {
                 {2,1}, {2,-1},
                 {-2,1}, {-2,-1},
@@ -23,13 +27,14 @@ public class KnightBoard{
                 };
     }
 
-    public void clear(){
+    /*public void clear(){
         for(int i = 0;i < board.length; i++){
             for(int j = 0; j < board[0].length; j++){
                 board[i][j] = 0;
             }
         }
-    }
+    }*/
+
     public String toString(){
         String output = "";
         for(int i = 0;i < board.length; i++){
@@ -44,17 +49,7 @@ public class KnightBoard{
         }
         return output;
     }
-    public String debug(){
-        String output = "";
-        for(int i = 0;i < board.length; i++){
-            for(int j = 0; j < board[0].length; j++){
-                output+= " " + board[i][j];
-            }
-            output += '\n';
-        }
-        return output;
-    }
-
+    
     public boolean solve(int startingRow,int startingCol){
         if(startingCol < 0 || startingRow < 0){
             throw new IllegalArgumentException();
@@ -117,5 +112,19 @@ public class KnightBoard{
         board[row][col] = 0;
         //System.out.println(output);
         return output;
+    }
+
+    private void makeMoves(){
+        for(int i = 0;i < board.length; i++){
+            for(int j = 0; j < board[0].length; j++){
+                int count = 0;
+                for (int[] x : moves){
+                    if(i + x[0] >= 0 && i + x[0] < board.length && j + x[1] >= 0 && j + x[1] < board[0].length){
+                        count++;
+                    }
+                optimize[i][j] = count;
+                }
+            }
+        }
     }
 }
