@@ -1,3 +1,5 @@
+import java.util.Collections;
+import java.util.ArrayList;
 public class KnightBoard{
 
     private int[][] board;
@@ -31,7 +33,8 @@ public class KnightBoard{
     }
 
     public static void main(String[] args) {
-        KnightBoard test = new KnightBoard(5,5);
+        KnightBoard test = new KnightBoard(5,6);
+        System.out.println(toString(test.optimize));
         System.out.println(test);
         System.out.println(test.solve(0,0));
         System.out.println(test);
@@ -39,18 +42,18 @@ public class KnightBoard{
         System.out.println(test.countSolutions(0,0));
         System.out.println(test);
         test.makeMoves();
-        System.out.println(toString(test.optimize));
     }
 
     public KnightBoard(int startingRows,int startingCols){
         board = new int[startingRows][startingCols];
-        optimize = board;
+        optimize = new int[startingRows][startingCols];
         moves = new int[][] {
                 {2,1}, {2,-1},
                 {-2,1}, {-2,-1},
                 {1,2}, {-1,-2},
                 {1,-2}, {-1,2}
                 };
+        makeMoves();
     }
 
     public void clear(){
@@ -151,23 +154,38 @@ public class KnightBoard{
             }
         }
     }
+
+
     private boolean solveOptH(int row ,int col, int level){
-        //System.out.println(this.debug());
+        //System.out.println(toString(this.optimize));
         board[row][col] = level;
         if (level == board.length * board[0].length) return true;
-        int[][] index = new int[8][3];
+        //optimize
+        ArrayList<ArrayList<Integer>> movesOpt = new ArrayList<ArrayList<Integer>>();
         for (int i = 0; i < moves.length; i++){
             if(row + moves[i][0] >= 0 && row + moves[i][0] < board.length && col + moves[i][1] >= 0 && col + moves[i][1] < board[0].length && board[row + moves[i][0]][col + moves[i][1]] == 0){
-                   index[i][0] = optimize[row + moves[i][0]][col + moves[i][1]];
-                   index[i][1] = row + moves[i][0];
-                   index[i][2] = col + moves[i][1];
+                ArrayList<Integer> add = new ArrayList<Integer>();
+                add.add(optimize[row + moves[i][0]][col + moves[i][1]]);
+                add.add(moves[i][0]);
+                add.add(moves[i][1]);
+                movesOpt.add(add);
               }
         }
-        insertionSort(index);
-        for(int[] i : index){
-            if (solveOptH(row + i[1], col + i[2], level + 1)){
+        //sort moves based on optimization
+        //thank you stackoverflow for this code snippet
+        Collections.sort(movesOpt, (one,two) -> one.get(0).compareTo(two.get(0)));
+        //System.out.println(toString(movesOpt));
+
+        for(ArrayList<Integer> i : movesOpt){
+            optimize[row + i.get(1)][col + i.get(2)]--;
+        }
+        for(ArrayList<Integer> i : movesOpt){
+            int old = optimize[row + i.get(1)][col + i.get(2)]--;
+            optimize[row + i.get(1)][col + i.get(2)] = 0;
+            if (solveOptH(row + i.get(1), col + i.get(2), level + 1)){
                 return true;
             }
+            optimize[row + i.get(1)][col + i.get(2)] = old;
         }
         board[row][col] = 0;
         return false;
