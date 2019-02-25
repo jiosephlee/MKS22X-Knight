@@ -80,7 +80,8 @@ public class KnightBoard{
         return output;
     }
 
-    public boolean solve(int startingRow,int startingCol){
+    public boolean solve(int startingRow,int startingCol){\
+        //check for exceptions
         if(startingCol < 0 || startingRow < 0){
             throw new IllegalArgumentException();
         }
@@ -96,20 +97,27 @@ public class KnightBoard{
 
     private boolean solveH(int row ,int col, int level){
         //System.out.println(this.debug());
+        //place knight on board
         board[row][col] = level;
+        //if the knight placed is the last knight, meaning the board is full, then return true
         if (level == board.length * board[0].length) return true;
+        //if not, branch out to next possible paths
         for (int[] i : moves){
             //System.out.println("yo");
+            //check if the next move is within bounds and then branch out.
+            //if that brach works then this branch works as well --> return true
             if(row + i[0] >= 0 && row + i[0] < board.length && col + i[1] >= 0 && col + i[1] < board[0].length && board[row + i[0]][col + i[1]] == 0
                && solveH(row + i[0], col + i[1], level + 1)){
                 return true;
             }
         }
+        //if the branch fails, reset the spot to 0 and move on to other brances
         board[row][col] = 0;
         return false;
     }
 
     public int countSolutions(int startingRow,int startingCol){
+        //check for exceptions
         if(startingCol < 0 || startingRow < 0){
             throw new IllegalArgumentException();
         }
@@ -124,6 +132,7 @@ public class KnightBoard{
     }
 
     private int countH(int row ,int col, int level){
+        //same logic as solveH but instead of returning true, you keep track of the number of solutions by adding to a count variable
         //System.out.println(this.debug());
         int output = 0;
         board[row][col] = level;
@@ -143,6 +152,8 @@ public class KnightBoard{
     }
 
     private void makeMoves(){
+    // loop through each spot of the board, and see how many moves are viable and not out of bounds
+    // put that number on a separate board called optimize
         for(int i = 0;i < board.length; i++){
             for(int j = 0; j < board[0].length; j++){
                 int count = 0;
@@ -158,10 +169,11 @@ public class KnightBoard{
 
 
     private boolean solveOptH(int row ,int col, int level){
+        //same logic as solveH but instead you prioritize smaller branches first
         //System.out.println(toString(this.optimize));
         board[row][col] = level;
         if (level == board.length * board[0].length) return true;
-        //optimize
+        //Add viable moves and their respective optimize number into an array
         ArrayList<ArrayList<Integer>> movesOpt = new ArrayList<ArrayList<Integer>>();
         for (int i = 0; i < moves.length; i++){
             if(row + moves[i][0] >= 0 && row + moves[i][0] < board.length && col + moves[i][1] >= 0 && col + moves[i][1] < board[0].length && board[row + moves[i][0]][col + moves[i][1]] == 0){
@@ -172,8 +184,8 @@ public class KnightBoard{
                 movesOpt.add(add);
               }
         }
-        //sort moves based on optimization
-        //thank you stackoverflow for this code snippet
+        //sort moves based on optimization number
+        //thank you stackoverflow for inspiring this code snippet
         Collections.sort(movesOpt, (one,two) -> one.get(0).compareTo(two.get(0)));
         //System.out.println(toString(movesOpt));
 
