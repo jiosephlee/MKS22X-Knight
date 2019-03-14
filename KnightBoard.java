@@ -80,7 +80,7 @@ public class KnightBoard{
         return output;
     }
 
-    public boolean solve(int startingRow,int startingCol){\
+    public boolean solve(int startingRow,int startingCol){
         //check for exceptions
         if(startingCol < 0 || startingRow < 0){
             throw new IllegalArgumentException();
